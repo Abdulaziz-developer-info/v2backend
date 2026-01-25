@@ -1,0 +1,17 @@
+    protected $table = 'org_settings';
+
+    protected $fillable = [
+        'org_id',
+        'wifi_name',
+        'wifi_ip_address',
+        'data_version',
+        'notes',
+    ];
+
+                $table->id();
+            $table->unsignedBigInteger('org_id')->nullable();
+            $table->string('wifi_name')->nullable();
+            $table->string('wifi_ip_address')->nullable();
+            $table->unsignedBigInteger('data_version')->default(1);
+            $table->text('notes')->nullable();
+            $table->timestamps();

@@ -5,6 +5,7 @@ use App\Http\Controllers\Panel\Admin\DashboardController;
 use App\Http\Controllers\Panel\DefaultMenuController;
 use App\Http\Controllers\Panel\Organization\OrganizationController;
 use App\Http\Controllers\Panel\Organization\OrganizationStaffController;
+use App\Http\Controllers\Panel\Organization\OrgMenuController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
@@ -68,6 +69,18 @@ Route::middleware('admin.auth')->group(function () {
             Route::post('/edit/{session_id}', [OrganizationStaffController::class, 'editSession'])->name('editSession');
             Route::delete('/destroy/{session_id}', [OrganizationStaffController::class, 'destroySession'])->name('destroySession');
         });
+    });
+
+    Route::prefix('organization/menu/')->name('organization_menu.')->group(function () {
+        Route::get('menu/{org_id}', [OrgMenuController::class, 'menu'])->name('menu');
+        Route::post('category/store/{org_id}', [OrgMenuController::class, 'category_store'])->name('category_store');
+        Route::post('product/update/{id}', [OrgMenuController::class, 'product_update'])->name('product_update');
+        Route::delete('product/delete/{id}', [OrgMenuController::class, 'product_destroy'])->name('product_destroy');
+
+
+        Route::get('default/menu/add/org/{org_id}/{category_id}', [OrgMenuController::class, 'default_menu_add_org'])->name('default_menu_add_org');
+        Route::post('/default/menu/add/org/store/{org_id}/{category_id}', [OrgMenuController::class, 'default_menu_add_org_store'])
+            ->name('default_menu_add_org_store');
     });
 
     Route::get('/organization/staff/notlification/{id}', [TestController::class, 'sendNotification']);

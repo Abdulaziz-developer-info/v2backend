@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Mobile\AppAuthController;
+use App\Http\Controllers\Mobile\Organization\AppMenuAndCategoryController;
 use App\Http\Controllers\Mobile\Organization\AppOrganizationController;
 use App\Http\Controllers\Mobile\User\AppUserController;
 use App\Http\Controllers\TestController;
@@ -22,8 +23,8 @@ Route::get('/ping', function () {
 });
 
 // Professional approach: Use different middleware based on environment
-$middleware = app()->environment('local') && PHP_OS_FAMILY === 'Windows' 
-    ? 'api.auth' 
+$middleware = app()->environment('local') && PHP_OS_FAMILY === 'Windows'
+    ? 'api.auth'
     : 'auth:sanctum';
 
 Route::middleware($middleware)->group(function () {
@@ -33,7 +34,7 @@ Route::middleware($middleware)->group(function () {
     Route::prefix('user/')->group(function () {
         Route::get('/info', [AppUserController::class, 'user_info']);
     });
-    
+
     Route::prefix('organization')->group(function () {
         Route::get('/info', [AppOrganizationController::class, 'organization_info']);
         Route::get('/info/{id}', [AppOrganizationController::class, 'organization_info_find']);
@@ -41,6 +42,15 @@ Route::middleware($middleware)->group(function () {
 
         Route::get('/settings', [AppOrganizationController::class, 'organization_settings']);
         Route::post('/setting/update', [AppOrganizationController::class, 'setting_update']);
+    });
+
+    Route::prefix('menu')->group(function () {
+        Route::get('/categories/{org_id}', [AppMenuAndCategoryController::class, 'categories']);
+        Route::get('/products/{org_id}', [AppMenuAndCategoryController::class, 'products']);
+ 
+
+        Route::get('/info/{id}', [AppOrganizationController::class, 'organization_info_find']);
+        Route::put('/update/{id}', [AppOrganizationController::class, 'organization_update']);
     });
 });
 

@@ -286,24 +286,47 @@
                                 </div>
 
                                 {{-- Product count --}}
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <label class="form-label">Product count</label>
                                     <input type="number" name="product_count" class="form-control"
                                         value="{{ old('product_count', $organization->product_count) }}">
                                 </div>
 
                                 {{-- Payment --}}
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <label class="form-label">Payment</label>
                                     <input type="text" name="payment" class="form-control"
                                         value="{{ old('payment', $organization->payment) }}">
                                 </div>
 
                                 {{-- Status --}}
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <label class="form-label">Status</label>
-                                    <input type="text" name="status" class="form-control"
-                                        value="{{ old('status', $organization->status) }}">
+                                    <select name="status" class="form-select @error('status') is-invalid @enderror">
+                                        <option value="new"
+                                            {{ old('status', $organization->status) == 'new' ? 'selected' : '' }}>Yangi
+                                        </option>
+                                        <option value="testing"
+                                            {{ old('status', $organization->status) == 'testing' ? 'selected' : '' }}>
+                                            Sinovda</option>
+                                        <option value="client"
+                                            {{ old('status', $organization->status) == 'client' ? 'selected' : '' }}>Klient
+                                        </option>
+                                        <option value="cancelled"
+                                            {{ old('status', $organization->status) == 'cancelled' ? 'selected' : '' }}>
+                                            Bekor qilingan</option>
+                                    </select>
+                                    @error('status')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                {{-- Branch Id --}}
+                                <div class="col-md-6">
+                                    <label class="form-label">Branch Id (New
+                                        {{ $organization->id . rand(100, 999) }})</label>
+                                    <input type="text" name="branch_id" class="form-control"
+                                        value="{{ old('branch_id', $organization->branch_id) }}">
                                 </div>
 
                                 {{-- Message --}}
@@ -363,9 +386,8 @@
                         </div>
                         {{-- {{ dd($organization->id) }} --}}
                         <div class="list-group list-group-flush">
-                            <a href="{{ route('organization_staff.org_staff', $organization->id) }}"
-                                class="list-group-item">Xodimlar</a>
-                            <a href="#" class="list-group-item">Menu</a>
+                            <a href="{{ route('organization_staff.org_staff', $organization->id) }}" class="list-group-item">Xodimlar</a>
+                            <a href="{{ route('organization_menu.menu', $organization->id) }}" class="list-group-item">Menu</a>
                             <a href="#" class="list-group-item">Xodimlar</a>
                             <a href="#" class="list-group-item">Hisobotlar</a>
                         </div>

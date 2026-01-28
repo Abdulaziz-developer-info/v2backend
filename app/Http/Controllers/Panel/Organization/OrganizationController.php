@@ -8,6 +8,7 @@ use App\Models\Organization;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Models\OrgSettings;
 use Intervention\Image\ImageManager;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -59,8 +60,18 @@ class OrganizationController extends Controller
 
             $data['logo'] = $path;
         }
-
+        
         Organization::create($data);
+
+        OrgSettings::create([
+            'org_id' => Organization::latest()->first()->id,
+            'global_sync_id' => 1,
+            'sync_id' => 1,
+            'wifi_name' => 'WiFi',
+            'wifi_ip' => 'Not set',
+            'editor' => auth()->guard('admin')->user()->name,
+
+        ]);
 
         return redirect()->route('organizations.index')->with('success', 'Organization saqlandi');
     }

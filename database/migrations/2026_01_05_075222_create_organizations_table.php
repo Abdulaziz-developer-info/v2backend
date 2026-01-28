@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->integer('block')->default(0);            
             $table->integer('admin_id')->nullable();
             $table->bigInteger('owner_id')->nullable();
-            $table->integer('branch')->nullable();
+            $table->integer('branch_id')->nullable();
             $table->string('org_type')->nullable();
             $table->string('org_name')->nullable();
             $table->string('address')->nullable();

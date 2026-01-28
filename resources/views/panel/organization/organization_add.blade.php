@@ -78,15 +78,34 @@
                                             <select name="org_type"
                                                 class="form-select @error('org_type') is-invalid @enderror" required>
                                                 <option value="">-- Tanlanmagan --</option>
-                                                <option value="small_cafe">Kichik Cafe</option>
-                                                <option value="multi_branch_small_cafe">Ko'p filialli kichik Cafe</option>
-                                                <option value="fast_food_cafe">Kafe Fast Food</option>
-                                                <option value="multi_branch_fast_food">Ko'p filialli Kafe Fast Food</option>
-                                                <option value="restaurant">Restaran</option>
-                                                <option value="multi_branch_restaurant">Ko'p filialli Restaran</option>
-                                                <option value="restaurant_supplier">Restaranga mahsulot yetkazib beruvchi
-                                                    do'kon</option>
+
+                                                <optgroup label="Umumiy ovqatlanish (Cafe & Restoran)">
+                                                    <option value="small_cafe">Kichik Cafe</option>
+                                                    <option value="multi_branch_small_cafe">Ko'p filialli kichik Cafe
+                                                    </option>
+                                                    <option value="fast_food_cafe">Kafe Fast Food</option>
+                                                    <option value="multi_branch_fast_food">Ko'p filialli Kafe Fast Food
+                                                    </option>
+                                                    <option value="restaurant">Restaran</option>
+                                                    <option value="multi_branch_restaurant">Ko'p filialli Restaran</option>
+                                                </optgroup>
+
+                                                <optgroup label="Savdo va Do'konlar">
+                                                    <option value="small_shop">Kichik dukon</option>
+                                                    <option value="multi_branch_small_shop">Ko'p filialli kichik dukon
+                                                    </option>
+                                                    <option value="big_shop">Katta dukon</option>
+                                                    <option value="multi_branch_big_shop">Ko'p filialli katta dukon</option>
+                                                    <option value="market">Market</option>
+                                                    <option value="multi_branch_market">Ko'p filialli Market</option>
+                                                </optgroup>
+
+                                                <optgroup label="Xizmat ko'rsatish">
+                                                    <option value="restaurant_supplier">Restaranga mahsulot yetkazib
+                                                        beruvchi do'kon</option>
+                                                </optgroup>
                                             </select>
+
                                             @error('org_type')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror

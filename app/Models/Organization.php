@@ -11,7 +11,7 @@ class Organization extends Model
         'block', // blocklash 1 block 2 bann
         'admin_id', // biriktirilgan admin
         'owner_id', // organizatsiya user id si
-        'branch', // filial true false 
+        'branch_id', // filial true false 
         'org_type', // organizatsion type bu nima qiladi bunda masalan restaranga yetkazib berish kichik fast food katta fililali restaranlar ni ajratish uchun shunchaki 
         'org_name', // organizatsiya nomi
         'address', //  manzil text 
@@ -28,4 +28,9 @@ class Organization extends Model
         'message', //  eslatma text
         'status', // organizatsiya xolati
     ];
+
+    public function orgSettings()
+    {
+        return $this->belongsTo(OrgSettings::class, 'id' , 'org_id');
+    }
 }

@@ -30,7 +30,7 @@ return new class extends Migration {
             $table->dateTime('logout_at')->nullable();
             $table->integer('is_active')->default(0);
             $table->text('fcm_token')->nullable();
-            $table->bigInteger('sync_id')->nullable();
+            $table->bigInteger('sync_id')->default(0);
             $table->string('deleted_at')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

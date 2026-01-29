@@ -16,6 +16,8 @@ return new class extends Migration {
             $table->string('name');
             $table->integer('sort')->default(0);
             $table->boolean('is_active')->default(true);
+            $table->bigInteger('sync_id')->default(0);
+            $table->string('deleted_at')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });

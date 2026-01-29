@@ -30,8 +30,9 @@ return new class extends Migration {
             $table->integer('discount_x')->nullable();
             $table->integer('discount_y')->nullable();
             $table->string('image_url')->nullable();
+            $table->string('qr_bar_cade')->nullable();
             $table->text('message')->nullable();
-            $table->bigInteger('sync_id')->nullable();
+            $table->bigInteger('sync_id')->default(0);
             $table->string('deleted_at')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

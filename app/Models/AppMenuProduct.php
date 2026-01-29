@@ -27,6 +27,9 @@ class AppMenuProduct extends Model
         'discount_x', // x dona olsa y dona bepul
         'discount_y', // x dona olsa y dona bepul
         'image_url', // rasm url
+        'qr_bar_cade', // qr kod bar code mahsulotlar uchun yoziladi 
         'message', // izohlar mahsulot haqida hisoh yozadida 
+        'sync_id', // global sync id mahsulotlar uchun yoziladi 
+        'deleted_at' // o'chirilgan vaqti mahsulotlar uchun yoziladi
     ];
 }

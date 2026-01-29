@@ -27,10 +27,12 @@ class Organization extends Model
         'auth', // auth uchun qr kod hash
         'message', //  eslatma text
         'status', // organizatsiya xolati
+        'sync_id',
+        'deleted_at'
     ];
 
     public function orgSettings()
     {
-        return $this->belongsTo(OrgSettings::class, 'id' , 'org_id');
+        return $this->belongsTo(OrgSettings::class, 'id', 'org_id');
     }
 }

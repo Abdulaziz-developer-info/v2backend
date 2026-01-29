@@ -27,5 +27,7 @@ class AccountSession extends Model
         'logout_at',
         'is_active',
         'fcm_token',
+        'sync_id',
+        'deleted_at'
     ];
 }

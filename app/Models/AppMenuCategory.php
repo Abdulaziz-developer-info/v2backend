@@ -13,5 +13,7 @@ class AppMenuCategory extends Model
         'name', // category name
         'sort', // tartib raqami
         'is_active', // faollik holati
+        'sync_id',
+        'deleted_at'
     ];
 }

@@ -14,7 +14,8 @@ class OrgSettings extends Model
         'wifi_ip', // wifi ip
         'app_version', // app versiyasi
         'editor', // tahrirchi
-        'sync_id', // yangilanish versiyasi idsi
+        'sync_id',
+        'deleted_at',
         'global_sync_id', // global yangilanish versiyasi idsi (1,2,3,4,5,6,7,8,9,10)
     ];
 }

@@ -48,7 +48,7 @@ class TestController extends Controller
             // 1. 'updates' ichiga yangi hujjat qo'shish
             $orgDoc->collection('updates')->document('update_id_1')->set([
                 'editor' => "Abdulaziz",
-                'global_sync_id' => 3,
+                'global_sync_id' => 4,
                 'last_active' => now()->toDateTimeString(),
             ]);
 
@@ -69,7 +69,7 @@ class TestController extends Controller
             // ]);
 
 
-            return "Yozildi!";
+            return back();
         } catch (\Exception $e) {
             return "Xato: " . $e->getMessage();
         }

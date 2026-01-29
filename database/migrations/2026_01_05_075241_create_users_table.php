@@ -53,7 +53,7 @@ return new class extends Migration {
             $table->string('message')->nullable();      // foydalanuvchi bilan bog‘liq xabarlar
             
             // updated uchun
-            $table->bigInteger('sync_id')->nullable();
+            $table->bigInteger('sync_id')->default(0);
             $table->string('deleted_at')->nullable();
 
             // Timestamps

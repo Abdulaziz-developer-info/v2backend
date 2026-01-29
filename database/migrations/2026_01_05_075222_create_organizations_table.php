@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('organizations', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('block')->default(0);            
+            $table->integer('block')->default(0);
             $table->integer('admin_id')->nullable();
             $table->bigInteger('owner_id')->nullable();
             $table->integer('branch_id')->nullable();
@@ -32,7 +32,7 @@ return new class extends Migration {
             $table->string('message')->nullable();
             $table->string('status')->nullable();
             $table->string('creator')->nullable();
-            $table->bigInteger('sync_id')->nullable();
+            $table->bigInteger('sync_id')->default(0);
             $table->string('deleted_at')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

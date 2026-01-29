@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Panel\Organization;
 use App\Http\Controllers\Controller;
 use App\Models\AppMenuCategory;
 use App\Models\AppMenuProduct;
+use App\Models\OrgSettings;
 use App\Models\PanelDefaultMenu;
+use App\Services\Firebase\FirebaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -41,11 +43,31 @@ class OrgMenuController extends Controller
         // Oxirgi sortni topib, yangisini +1 qilish
         $lastSort = AppMenuCategory::where('org_id', $org_id)->max('sort') ?? 0;
 
+        $org_settings = OrgSettings::where('org_id', $org_id)->first();
+        $org_settings->update([
+            'global_sync_id' => $org_settings->global_sync_id + 1,
+            'editor' => auth()->guard('admin')->user()->name,
+        ]);
+
+
+        $firebaseService = app(FirebaseService::class);
+        $firestore = $firebaseService->firestore();
+
+        $orgDoc = $firestore->collection('org')->document((string) $org_id);
+
+        // 1. 'updates' ichiga yangi hujjat qo'shish
+        $orgDoc->collection('updates')->document('update_id_' . $org_id)->set([
+            'editor' => auth()->guard('admin')->user()->name,
+            'global_sync_id' => $org_settings->global_sync_id,
+            'last_active' => now()->toDateTimeString(),
+        ]);
+
         AppMenuCategory::create([
             'org_id' => $org_id,
             'name' => $request->name,
             'sort' => $lastSort + 1,
-            'is_active' => true
+            'is_active' => true,
+            'sync_id' => $org_settings->global_sync_id
         ]);
 
         return redirect()->back()->with('success', 'Kategoriya muvaffaqiyatli yaratildi!');
@@ -102,6 +124,26 @@ class OrgMenuController extends Controller
 
         $data['is_free'] = $request->has('is_free') ? 'true' : 'false';
 
+        $org_settings = OrgSettings::where('org_id', $product->org_id)->first();
+        $org_settings->update([
+            'global_sync_id' => $org_settings->global_sync_id + 1,
+            'editor' => auth()->guard('admin')->user()->name,
+        ]);
+
+        $product['sync_id'] = $org_settings->global_sync_id;
+
+        $firebaseService = app(FirebaseService::class);
+        $firestore = $firebaseService->firestore();
+
+        $orgDoc = $firestore->collection('org')->document((string) $product->org_id);
+
+        // 1. 'updates' ichiga yangi hujjat qo'shish
+        $orgDoc->collection('updates')->document('update_id_' . $product->org_id)->set([
+            'editor' => auth()->guard('admin')->user()->name,
+            'global_sync_id' => $org_settings->global_sync_id,
+            'last_active' => now()->toDateTimeString(),
+        ]);
+
         // 4. Bazani yangilash (faqat $data ichidagi bor fieldlar yangilanadi)
         $product->update($data);
 
@@ -111,13 +153,13 @@ class OrgMenuController extends Controller
     public function product_destroy($id)
     {
         $product = AppMenuProduct::findOrFail($id);
-        $product->delete(); // Soft delete bo'lsa deleted_at ga vaqt qo'yadi
+        $product->delete();
 
         return redirect()->back()->with('danger', "Mahsulot o''chirildi!");
     }
 
 
-    public function default_menu_add_org(Request $request, $org_id, $category_id)
+    public function default_menu_org(Request $request, $org_id, $category_id)
     {
         $search = $request->input('search');
         $selectedCategory = $request->input('category_id');
@@ -166,6 +208,25 @@ class OrgMenuController extends Controller
             'price' => 'required|numeric',
         ]);
 
+        $org_settings = OrgSettings::where('org_id', $org_id)->first();
+        $org_settings->update([
+            'global_sync_id' => $org_settings->global_sync_id + 1,
+            'editor' => auth()->guard('admin')->user()->name,
+        ]);
+
+
+        $firebaseService = app(FirebaseService::class);
+        $firestore = $firebaseService->firestore();
+
+        $orgDoc = $firestore->collection('org')->document((string) $org_id);
+
+        // 1. 'updates' ichiga yangi hujjat qo'shish
+        $orgDoc->collection('updates')->document('update_id_' . $org_id)->set([
+            'editor' => auth()->guard('admin')->user()->name,
+            'global_sync_id' => $org_settings->global_sync_id,
+            'last_active' => now()->toDateTimeString(),
+        ]);
+
         // 2. Bazaga yozish
         // Eslatma: $category_id URL dan kelmoqda (restoranning tanlangan kategoriyasi)
         DB::table('app_menu_products')->insert([
@@ -176,6 +237,7 @@ class OrgMenuController extends Controller
             'message' => $request->message,
             'price' => $request->price,
             'is_active' => true,
+            'sync_id' => $org_settings->global_sync_id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

@@ -36,6 +36,8 @@ Route::middleware($middleware)->group(function () {
     });
 
     Route::prefix('organization')->group(function () {
+        Route::post('/global/data/sync/{org_id}', [AppOrganizationController::class, 'global_data_sync']);
+
         Route::get('/info', [AppOrganizationController::class, 'organization_info']);
         Route::get('/info/{id}', [AppOrganizationController::class, 'organization_info_find']);
         Route::put('/update/{id}', [AppOrganizationController::class, 'organization_update']);
@@ -47,10 +49,6 @@ Route::middleware($middleware)->group(function () {
     Route::prefix('menu')->group(function () {
         Route::get('/categories/{org_id}', [AppMenuAndCategoryController::class, 'categories']);
         Route::get('/products/{org_id}', [AppMenuAndCategoryController::class, 'products']);
- 
-
-        Route::get('/info/{id}', [AppOrganizationController::class, 'organization_info_find']);
-        Route::put('/update/{id}', [AppOrganizationController::class, 'organization_update']);
     });
 });
 

@@ -45,6 +45,9 @@ class User extends Authenticatable
         'auth',        // API auth
         'token',       // session yoki API token
 
+        'sync_id',
+        'deleted_at',
+
         // Qo‘shimcha
         'note',        // qo‘shimcha izohlar
         'message',     // foydalanuvchi bilan bog‘liq xabarlar

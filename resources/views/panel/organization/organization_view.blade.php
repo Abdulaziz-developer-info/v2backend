@@ -24,7 +24,7 @@
 
                         <div class="card-body">
                             <div class="row g-3">
-
+                                <a href="{{ url('api/test') }}">sdfsdfsdf</a>
                                 {{-- Logo --}}
                                 <div class="col-md-12">
                                     <div class="row align-items-center g-3">

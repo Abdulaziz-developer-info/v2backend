@@ -9,7 +9,7 @@
                         <h2 class="page-title fw-bold text-uppercase">Katalog Boshqaruvi</h2>
                     </div>
                     <div class="col-auto ms-auto d-flex gap-2">
-                        <a href="{{ route('organization_menu.default_menu_add_org', [$org_id, $active_cat_id ?? 0]) }}"
+                        <a href="{{ route('organization_menu.default_menu_org', [$org_id, $active_cat_id ?? 0]) }}"
                             class="btn btn-outline-primary border-2 shadow-sm fw-bold">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">

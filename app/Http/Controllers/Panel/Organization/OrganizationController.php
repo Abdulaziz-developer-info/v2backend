@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\OrgSettings;
+use App\Services\Firebase\FirebaseService;
 use Intervention\Image\ImageManager;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -60,7 +61,7 @@ class OrganizationController extends Controller
 
             $data['logo'] = $path;
         }
-        
+
         Organization::create($data);
 
         OrgSettings::create([
@@ -119,7 +120,29 @@ class OrganizationController extends Controller
             $data['logo'] = $path;
         }
 
+        $org_settings = OrgSettings::where('org_id', $organization->id)->first();
+        $org_settings->update([
+            'global_sync_id' => $org_settings->global_sync_id + 1,
+            'editor' => auth()->guard('admin')->user()->name,
+        ]);
+
+        $data['sync_id'] = $org_settings->global_sync_id;
+        $data['editor'] = auth()->guard('admin')->user()->name;
+
+        $firebaseService = app(FirebaseService::class);
+        $firestore = $firebaseService->firestore();
+
+        $orgDoc = $firestore->collection('org')->document((string) $organization->id);
+
+        // 1. 'updates' ichiga yangi hujjat qo'shish
+        $orgDoc->collection('updates')->document('update_id_'.$organization->id)->set([
+            'editor' => auth()->guard('admin')->user()->name,
+            'global_sync_id' => $org_settings->global_sync_id,
+            'last_active' => now()->toDateTimeString(),
+        ]);
+
         $organization->update($data);
+        
         return back()->with('success', 'Organization updated successfully.');
     }
 

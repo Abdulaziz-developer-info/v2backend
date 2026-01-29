@@ -78,7 +78,7 @@ Route::middleware('admin.auth')->group(function () {
         Route::delete('product/delete/{id}', [OrgMenuController::class, 'product_destroy'])->name('product_destroy');
 
 
-        Route::get('default/menu/add/org/{org_id}/{category_id}', [OrgMenuController::class, 'default_menu_add_org'])->name('default_menu_add_org');
+        Route::get('default/menu/org/{org_id}/{category_id}', [OrgMenuController::class, 'default_menu_org'])->name('default_menu_org');
         Route::post('/default/menu/add/org/store/{org_id}/{category_id}', [OrgMenuController::class, 'default_menu_add_org_store'])
             ->name('default_menu_add_org_store');
     });

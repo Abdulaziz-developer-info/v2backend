@@ -16,8 +16,9 @@ return new class extends Migration {
             // Status va tashkilot
             $table->integer('block')->default(0);       // 0 = aktiv, 1 = bloklangan
             $table->integer('active')->default(0);      // 0 = noaktiv, 1 = aktiv
-            $table->bigInteger('org_id')->nullable();   // Foydalanuvchi qaysi restoran/orgga tegishli
-
+            $table->bigInteger('org_id')->nullable()->index();   // Foydalanuvchi qaysi restoran/orgga tegishli
+            $table->boolean('is_guest')->default(false); // foydalanuvchi accountini yurgizadimi
+            
             // account sessiyalar 
             $table->integer('session_id')->nullable();      // qaysi sessiya bilan ishlayotgani 
             $table->integer('logged_in')->nullable();      // login qilib kirgan bolsa 1 boladi va shu user accountiga boradi
@@ -28,10 +29,11 @@ return new class extends Migration {
 
             // Shaxsiy ma'lumotlar
             $table->string('name')->nullable();
+            $table->string('login')->nullable();
             $table->string('password')->nullable();
             $table->string('avatar')->nullable();
             $table->string('email')->unique()->nullable();
-            $table->string('phone')->unique()->nullable();
+            $table->string('phone')->nullable();
             $table->boolean('phone_verified')->default(false);
             $table->string('verification_code')->nullable();
 

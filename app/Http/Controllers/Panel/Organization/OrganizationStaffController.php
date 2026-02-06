@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\AccountSession;
 use App\Models\User;
 use App\Models\Organization;
+use App\Models\OrgSettings;
+use App\Services\Firebase\FirebaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -94,21 +96,21 @@ class OrganizationStaffController extends Controller
         }
 
         // Avatar upload va optimizatsiya (webp, 300x300) — admin misoliga mos
-if ($request->hasFile('avatar')) {
-    if ($user->avatar) {
-        Storage::disk('public')->delete($user->avatar);
-    }
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
 
-    $image = Image::read($request->file('avatar'))
-        ->cover(300, 300)
-        ->toWebp(80);
+            $image = Image::read($request->file('avatar'))
+                ->cover(300, 300)
+                ->toWebp(80);
 
-    $fileName = uniqid('staff_') . '.webp';
-    $path = 'staffs/' . $fileName;
+            $fileName = uniqid('staff_') . '.webp';
+            $path = 'staffs/' . $fileName;
 
-    Storage::disk('public')->put($path, (string) $image);
-    $data['avatar'] = $path;
-}
+            Storage::disk('public')->put($path, (string) $image);
+            $data['avatar'] = $path;
+        }
 
 
         $plainPassword = null;
@@ -116,9 +118,29 @@ if ($request->hasFile('avatar')) {
             $plainPassword = $request->password;
         }
 
+        $org_settings = OrgSettings::where('org_id', $org_id)->first();
+        $org_settings->increment('global_sync_id');
+        $org_settings->editor = auth()->guard('admin')->user()->name;
+        $org_settings->refresh();
+
+        $data['sync_id'] = $org_settings->global_sync_id;
+
+        $firebaseService = app(FirebaseService::class);
+        $firestore = $firebaseService->firestore();
+
+        $orgDoc = $firestore->collection('org')->document((string) $org_id);
+
+
+        $orgDoc->collection('updates')->document('update_id_' . $org_id)->set([
+            'editor' => auth()->guard('admin')->user()->name,
+            'global_sync_id' => $org_settings->global_sync_id,
+            'last_active' => now()->toDateTimeString(),
+        ]);
+
+
         $user->update($data);
 
-        return redirect()->back()->with('success', 'Xodim ma\'lumotlari yangilandi')->with('staff_credentials', [
+        return redirect()->back()->with('success', "Xodim ma'lumotlari yangilandi")->with('staff_credentials', [
             'login' => $user->name,
             'password' => $plainPassword
         ]);

@@ -19,19 +19,37 @@ class OrgMenuController extends Controller
 
     public function menu($org_id)
     {
-        $categories = AppMenuCategory::where('org_id', $org_id)->orderBy('sort')->get();
-
-        // Tanlangan kategoriya (yoki birinchisi)
-        $active_cat_id = request('category_id', $categories->first()->id ?? null);
-
-        $products = AppMenuProduct::where('org_id', $org_id)
-            ->when($active_cat_id, function ($q) use ($active_cat_id) {
-                return $q->where('category_id', $active_cat_id);
-            })
+        // 1. Kategoriyalarni olamiz
+        $categories = AppMenuCategory::where('org_id', $org_id)
             ->orderBy('sort')
             ->get();
 
-        return view('panel.organization.menu.index', compact('categories', 'products', 'org_id', 'active_cat_id'));
+        // 2. Aktiv kategoriyani aniqlaymiz (Xavfsiz usulda)
+        // request ichida bo'lsa uni oladi, bo'lmasa birinchi kategoriyani, u ham bo'lmasa null
+        $active_cat_id = request('category_id');
+
+        if (!$active_cat_id && $categories->isNotEmpty()) {
+            $active_cat_id = $categories->first()->id;
+        }
+
+        // 3. Mahsulotlarni so'raymiz
+        $query = AppMenuProduct::where('org_id', $org_id);
+
+        // Agar kategoriya bo'lsa va u bo'sh bo'lmasa filtrlaymiz
+        if ($active_cat_id) {
+            $query->where('category_id', $active_cat_id);
+        }
+
+        // 4. Mahsulotlarni olishda 'sort' xatosini oldini olish
+        // Agar app_menu_products jadvalida 'sort' bo'lmasa, 'id' bo'yicha tartiblang
+        $products = $query->orderBy('id', 'desc')->get();
+
+        return view('panel.organization.menu.index', compact(
+            'categories',
+            'products',
+            'org_id',
+            'active_cat_id'
+        ));
     }
 
     public function category_store(Request $request, $org_id)
@@ -122,8 +140,7 @@ class OrgMenuController extends Controller
             $data['is_active'] = 0;
         }
 
-        $data['is_free'] = $request->has('is_free') ? 'true' : 'false';
-
+        
         $org_settings = OrgSettings::where('org_id', $product->org_id)->first();
         $org_settings->update([
             'global_sync_id' => $org_settings->global_sync_id + 1,
@@ -234,7 +251,7 @@ class OrgMenuController extends Controller
             'category_id' => $category_id,
             'image_url' => $request->image,
             'name' => $request->name,
-            'message' => $request->message,
+            'description' => $request->message,
             'price' => $request->price,
             'is_active' => true,
             'sync_id' => $org_settings->global_sync_id,

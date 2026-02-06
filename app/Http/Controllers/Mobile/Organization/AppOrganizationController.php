@@ -7,6 +7,7 @@ use App\Models\AppMenuCategory;
 use App\Models\AppMenuProduct;
 use App\Models\Organization;
 use App\Models\OrgSettings;
+use App\Models\User;
 use App\Services\Firebase\FirebaseService;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,12 @@ class AppOrganizationController extends Controller
 
     public function global_data_sync(Request $request, $org_id)
     {
+        $user = $request->user();
+
         $local_sync_id = $request->input('local_sync_id', 0);
+
+        $user_info = User::where('sync_id', '>', $local_sync_id)
+            ->find($user->id);
 
         $org_settings_data = OrgSettings::where('org_id', $org_id)->first();
         $org_settings = $org_settings_data->where('sync_id', '>', $local_sync_id)->first();
@@ -34,6 +40,7 @@ class AppOrganizationController extends Controller
             'success' => true,
             'global_sync_id' => $org_settings_data->global_sync_id,
             'data' => [
+                'user_info' => $user_info,
                 'org_settings' => $org_settings,
                 'organization' => $organization,
                 'app_menu_category' => $app_menu_category,

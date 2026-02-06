@@ -2,27 +2,26 @@
 
 namespace App\Http\Controllers\Mobile\Organization;
 
-use App\Models\OrgSettings;
-use Illuminate\Http\Request;
-use App\Models\AppMenuProduct;
-use Illuminate\Support\Carbon;
-use App\Models\AppMenuCategory;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\OrgSettings;
+use App\Models\OrgTable;
+use App\Models\OrgTableCategories;
 use App\Services\Firebase\FirebaseService;
+use Illuminate\Http\Request;
 
-class AppMenuAndCategoryController extends Controller
+class OrgTableController extends Controller
 {
-    public function categories($org_id)
+    public function table_categories($org_id)
     {
-        $categories = AppMenuCategory::where('org_id', $org_id)->get();
+        $categories = OrgTableCategories::where('org_id', $org_id)->get();
         return response()->json($categories);
     }
-
-    public function categories_create(Request $request, $org_id)
+    public function table_categories_create(Request $request, $org_id)
     {
-        $data = $request->all();
         $user = $request->user();
+        $data = $request->all();
+
+
         $org_settings = OrgSettings::where('org_id', $org_id)->first();
         $org_settings->update([
             'global_sync_id' => $org_settings->global_sync_id + 1,
@@ -41,25 +40,21 @@ class AppMenuAndCategoryController extends Controller
             'last_active' => now()->toDateTimeString(),
         ]);
 
-        $old_category = AppMenuCategory::where('org_id', $org_id)->orderBy('sort', 'desc')->first();
-        $data['sort'] = $old_category->sort + 1;
-        $category = AppMenuCategory::create($data);
+        $category = OrgTableCategories::create($data);
         return response()->json($category);
     }
 
-    public function categories_update(Request $request, $org_id, $category_id)
+    public function table_categories_update(Request $request, $org_id, $category_id)
     {
-        $data = $request->all();
         $user = $request->user();
-        $category = AppMenuCategory::find($category_id);
+        $data = $request->all();
 
         $org_settings = OrgSettings::where('org_id', $org_id)->first();
         $org_settings->update([
             'global_sync_id' => $org_settings->global_sync_id + 1,
             'editor' => $user->name,
         ]);
-
-        $category['sync_id'] = $org_settings->global_sync_id;
+        $data['sync_id'] = $org_settings->global_sync_id;
 
         $firebaseService = app(FirebaseService::class);
         $firestore = $firebaseService->firestore();
@@ -72,48 +67,12 @@ class AppMenuAndCategoryController extends Controller
             'last_active' => now()->toDateTimeString(),
         ]);
 
+        $category = OrgTableCategories::find($category_id);
         $category->update($data);
-
         return response()->json($category);
     }
 
-    public function categories_delete(Request $request, $org_id, $category_id)
-    {
-        $user = $request->user();
-        $org_settings = OrgSettings::where('org_id', $org_id)->first();
-        $org_settings->update([
-            'global_sync_id' => $org_settings->global_sync_id + 1,
-            'editor' => $user->name,
-        ]);
-
-
-        $firebaseService = app(FirebaseService::class);
-        $firestore = $firebaseService->firestore();
-
-        $orgDoc = $firestore->collection('org')->document((string) $org_id);
-
-        $orgDoc->collection('updates')->document('update_id_' . $org_id)->set([
-            'editor' => $user->name,
-            'global_sync_id' => $org_settings->global_sync_id,
-            'last_active' => now()->toDateTimeString(),
-        ]);
-
-        DB::transaction(function () use ($category_id) {
-            $category = AppMenuCategory::findOrFail($category_id);
-            AppMenuProduct::where('category_id', $category_id)->delete();
-            $category->delete();
-        });
-
-        return response()->json([], 204);
-    }
-
-    public function products($org_id)
-    {
-        $products = AppMenuProduct::where('org_id', $org_id)->get();
-        return response()->json($products);
-    }
-
-    public function product_create(Request $request, $org_id)
+    public function table_categories_delete(Request $request, $org_id, $category_id)
     {
         $user = $request->user();
         $data = $request->all();
@@ -136,15 +95,24 @@ class AppMenuAndCategoryController extends Controller
             'last_active' => now()->toDateTimeString(),
         ]);
 
-
-        $product = AppMenuProduct::create($data);
-        return response()->json($product);
+        $category = OrgTableCategories::find($category_id);
+        $category->delete();
+        return response()->json($category);
     }
 
-    public function product_update(Request $request, $org_id, $product_id)
+
+
+    public function table($org_id)
+    {
+        $table = OrgTable::where('org_id', $org_id)->get();
+        return response()->json($table);
+    }
+
+    public function table_create(Request $request, $org_id)
     {
         $user = $request->user();
         $data = $request->all();
+
         $org_settings = OrgSettings::where('org_id', $org_id)->first();
         $org_settings->update([
             'global_sync_id' => $org_settings->global_sync_id + 1,
@@ -163,19 +131,21 @@ class AppMenuAndCategoryController extends Controller
             'last_active' => now()->toDateTimeString(),
         ]);
 
-        $product = AppMenuProduct::findOrFail($product_id);
-        $product->update($data);
-        return response()->json($product);
+        $table = OrgTable::create($data);
+        return response()->json($table);
     }
 
-    public function product_delete(Request $request, $org_id, $product_id)
+    public function table_update(Request $request, $org_id, $id)
     {
         $user = $request->user();
+        $data = $request->all();
+
         $org_settings = OrgSettings::where('org_id', $org_id)->first();
         $org_settings->update([
             'global_sync_id' => $org_settings->global_sync_id + 1,
             'editor' => $user->name,
         ]);
+        $data['sync_id'] = $org_settings->global_sync_id;
 
         $firebaseService = app(FirebaseService::class);
         $firestore = $firebaseService->firestore();
@@ -188,8 +158,101 @@ class AppMenuAndCategoryController extends Controller
             'last_active' => now()->toDateTimeString(),
         ]);
 
-        $product = AppMenuProduct::findOrFail($product_id);
-        $product->delete();
-        return response()->json([], 204);
+        $table = OrgTable::find($id);
+        $table->update($data);
+        return response()->json($table);
     }
+
+    public function table_list_update(Request $request, $org_id)
+    {
+        $user = $request->user();
+        $tablesData = $request->all(); // Bu yerda stollar massivi keladi
+
+        // 1. Sync ID ni yangilash (Barcha stollar uchun bir xil bo'ladi)
+        $org_settings = OrgSettings::where('org_id', $org_id)->first();
+        $org_settings->update([
+            'global_sync_id' => $org_settings->global_sync_id + 1,
+            'editor' => $user->name,
+        ]);
+
+        $new_sync_id = $org_settings->global_sync_id;
+
+        // 2. Firebase/Firestore sinxronizatsiyasi
+        $firebaseService = app(FirebaseService::class);
+        $firestore = $firebaseService->firestore();
+        $orgDoc = $firestore->collection('org')->document((string) $org_id);
+
+        $orgDoc->collection('updates')->document('update_id_' . $org_id)->set([
+            'editor' => $user->name,
+            'global_sync_id' => $new_sync_id,
+            'last_active' => now()->toDateTimeString(),
+        ]);
+
+        $processedTables = [];
+
+        // 3. Har bir stolni update yoki create qilish
+        foreach ($tablesData as $data) {
+            // Keraksiz yoki xavfli maydonlarni tozalash (agar bo'lsa)
+            $id = $data['id'] ?? 0;
+
+            // Bazada bor bo'lsa yangilaydi, yo'q bo'lsa yaratadi
+            $table = OrgTable::updateOrCreate(
+                [
+                    'id' => $id > 0 ? $id : null, // ID bo'lsa o'sha bo'yicha qidiradi
+                    'org_id' => $org_id
+                ],
+                [
+                    'category_id' => $data['category_id'],
+                    'name' => $data['name'],
+                    'number' => $data['number'],
+                    'capacity' => $data['capacity'],
+                    'pos_x' => $data['pos_x'],
+                    'pos_y' => $data['pos_y'],
+                    'width' => $data['width'],
+                    'height' => $data['height'],
+                    'shape' => $data['shape'],
+                    'border_radius' => $data['border_radius'],
+                    'color' => $data['color'],
+                    'is_active' => $data['is_active'] ?? true,
+                    'service_type' => $data['service_type'] ?? 'none',
+                    'service_value' => $data['service_value'] ?? 0,
+                    'sync_id' => $new_sync_id, 
+                ]
+            );
+
+            $processedTables[] = $table;
+        }
+
+        // 4. Barcha yangilangan/yaratilgan stollarni qaytaramiz
+        return response()->json($processedTables);
+    }
+
+    public function table_delete(Request $request, $org_id, $id)
+    {
+        $user = $request->user();
+        $data = $request->all();
+
+        $org_settings = OrgSettings::where('org_id', $org_id)->first();
+        $org_settings->update([
+            'global_sync_id' => $org_settings->global_sync_id + 1,
+            'editor' => $user->name,
+        ]);
+        $data['sync_id'] = $org_settings->global_sync_id;
+
+        $firebaseService = app(FirebaseService::class);
+        $firestore = $firebaseService->firestore();
+
+        $orgDoc = $firestore->collection('org')->document((string) $org_id);
+
+        $orgDoc->collection('updates')->document('update_id_' . $org_id)->set([
+            'editor' => $user->name,
+            'global_sync_id' => $org_settings->global_sync_id,
+            'last_active' => now()->toDateTimeString(),
+        ]);
+
+        $table = OrgTable::find($id);
+        $table->delete();
+        return response()->json($table);
+    }
+
 }

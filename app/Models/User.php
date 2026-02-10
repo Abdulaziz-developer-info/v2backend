@@ -15,6 +15,7 @@ class User extends Authenticatable
         'block',       // 0 = aktiv, 1 = bloklangan
         'active',     // 0 = noaktiv, 1 = aktiv
         'org_id',  // Foydalanuvchi qaysi restoran/orgga tegishli
+        'is_guest', // Foydalanuvchi qaysi restoran/orgga tegishli
 
         'session_id',      // qaysi sessiya bilan ishlayotgani 
         'logged_in',      // login qilib kirgan bolsa 1 boladi va shu user accountiga boradi
@@ -25,6 +26,7 @@ class User extends Authenticatable
 
         // Shaxsiy ma'lumotlar
         'name', // tuliq ismi
+        'login', // login
         'password', // paroli kyinchalik
         'avatar', // rasmi
         'email', // email

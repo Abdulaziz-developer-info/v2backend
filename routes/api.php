@@ -3,8 +3,10 @@
 use App\Http\Controllers\Mobile\AppAuthController;
 use App\Http\Controllers\Mobile\Organization\AppMenuAndCategoryController;
 use App\Http\Controllers\Mobile\Organization\AppOrganizationController;
-use App\Http\Controllers\Mobile\Organization\OrgStaffController;
-use App\Http\Controllers\Mobile\Organization\OrgTableController;
+use App\Http\Controllers\Mobile\Organization\AppOrgDiscountController;
+use App\Http\Controllers\Mobile\Organization\AppOrgPaymentController;
+use App\Http\Controllers\Mobile\Organization\AppOrgStaffController;
+use App\Http\Controllers\Mobile\Organization\AppOrgTableController;
 use App\Http\Controllers\Mobile\User\AppUserController;
 use App\Http\Controllers\TestController;
 use Illuminate\Http\Request;
@@ -62,24 +64,38 @@ Route::middleware($middleware)->group(function () {
     });
 
     Route::prefix('table')->group(function () {
-        Route::get('/categories/{org_id}', [OrgTableController::class, 'table_categories']); 
-        Route::post('/categories/create/{org_id}', [OrgTableController::class, 'table_categories_create']); 
-        Route::put('/categories/update/{org_id}/{category_id}', [OrgTableController::class, 'table_categories_update']); 
-        Route::delete('/categories/delete/{org_id}/{category_id}', [OrgTableController::class, 'table_categories_delete']); 
+        Route::get('/categories/{org_id}', [AppOrgTableController::class, 'table_categories']);
+        Route::post('/categories/create/{org_id}', [AppOrgTableController::class, 'table_categories_create']);
+        Route::put('/categories/update/{org_id}/{category_id}', [AppOrgTableController::class, 'table_categories_update']);
+        Route::delete('/categories/delete/{org_id}/{category_id}', [AppOrgTableController::class, 'table_categories_delete']);
 
-        Route::get('/{org_id}', [OrgTableController::class, 'table']); 
-        Route::post('/create/{org_id}', [OrgTableController::class, 'table_create']); 
-        Route::put('/update/{org_id}/{id}', [OrgTableController::class, 'table_update']); 
-        Route::put('/list/update/{org_id}', [OrgTableController::class, 'table_list_update']); 
-        Route::delete('/delete/{org_id}/{id}', [OrgTableController::class, 'table_delete']);
-        Route::delete('/delete/{org_id}/{id}', [OrgTableController::class, 'table_delete']);
+        Route::get('/{org_id}', [AppOrgTableController::class, 'table']);
+        Route::post('/create/{org_id}', [AppOrgTableController::class, 'table_create']);
+        Route::put('/update/{org_id}/{id}', [AppOrgTableController::class, 'table_update']);
+        Route::put('/list/update/{org_id}', [AppOrgTableController::class, 'table_list_update']);
+        Route::delete('/delete/{org_id}/{id}', [AppOrgTableController::class, 'table_delete']);
+        Route::delete('/delete/{org_id}/{id}', [AppOrgTableController::class, 'table_delete']);
     });
 
     Route::prefix('staff')->group(function () {
-        Route::get('/all/{org_id}', [OrgStaffController::class, 'staff_all']); 
-        Route::get('/create/{org_id}', [OrgStaffController::class, 'staff_create']); 
-        Route::get('/edit/{org_id}/{staff_id}', [OrgStaffController::class, 'staff_edit']); 
-        Route::get('/delete/{org_id}/{staff_id}', [OrgStaffController::class, 'staff_delete']); 
+        Route::get('/all/{org_id}', [AppOrgStaffController::class, 'staff_all']);
+        Route::post('/create/{org_id}', [AppOrgStaffController::class, 'staff_create']);
+        Route::put('/edit/{org_id}/{staff_id}', [AppOrgStaffController::class, 'staff_edit']);
+        Route::delete('/delete/{org_id}/{staff_id}', [AppOrgStaffController::class, 'staff_delete']);
+    });
+
+    Route::prefix('payment')->group(function () {
+        Route::get('/all/{org_id}', [AppOrgPaymentController::class, 'payment_all']);
+        Route::post('/create/{org_id}', [AppOrgPaymentController::class, 'payment_create']);
+        Route::put('/edit/{org_id}/{payment_id}', [AppOrgPaymentController::class, 'payment_edit']);
+        Route::delete('/delete/{org_id}/{payment_id}', [AppOrgPaymentController::class, 'payment_delete']);
+    });
+
+    Route::prefix('discount')->group(function () {
+        Route::get('/all/{org_id}', [AppOrgDiscountController::class, 'discount_all']);
+        Route::post('/create/{org_id}', [AppOrgDiscountController::class, 'discount_create']);
+        Route::put('/edit/{org_id}/{discount_id}', [AppOrgDiscountController::class, 'discount_edit']);
+        Route::delete('/delete/{org_id}/{discount_id}', [AppOrgDiscountController::class, 'discount_delete']);
     });
 });
 

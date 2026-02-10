@@ -9,7 +9,7 @@ use App\Models\OrgTableCategories;
 use App\Services\Firebase\FirebaseService;
 use Illuminate\Http\Request;
 
-class OrgTableController extends Controller
+class AppOrgTableController extends Controller
 {
     public function table_categories($org_id)
     {

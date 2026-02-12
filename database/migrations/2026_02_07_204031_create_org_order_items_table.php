@@ -20,12 +20,14 @@ return new class extends Migration {
             $table->string('day_id')->index()->nullable(); // Smuna (Smena) yopilganda hisobotlarni guruhlash uchun
 
             // Bog'lanishlar
-            $table->foreignId('order_id')->constrained('org_orders')->onDelete('cascade'); // Asosiy chekka bog'lanish
+            $table->unsignedBigInteger('order_id'); // Asosiy chekka bog'lanish
             $table->unsignedBigInteger('product_id')->index(); // Mahsulot yoki Taom IDsi
             $table->unsignedBigInteger('taker_id')->nullable(); // Buyurtmani qabul qilgan xodim (Ofitsant/Sotuvchi)
             $table->unsignedBigInteger('user_id')->nullable();   // user id xuranda yaniy
+            $table->unsignedBigInteger('table_id')->nullable();   // table id
 
             // Miqdor va Birlik
+            $table->string('product_name')->nullable();
             $table->decimal('quantity', 12, 3); // Sotilgan miqdor (3 ta nol - kg/metr aniqligi uchun shart)
 
             // soliq uchun
@@ -35,7 +37,6 @@ return new class extends Migration {
             // Narxlar va Moliya
             $table->decimal('cost_price', 15, 2); // Sotilgan vaqtdagi tan narxi (Foydani hisoblash uchun)
             $table->decimal('unit_price', 15, 2); // Sotilgan vaqtdagi narxi (Aksiyasiz, modifikatorsiz)
-            $table->decimal('base_unit_price', 15, 2)->nullable(); // Mahsulotning asl (aksiyasiz) narxi (Statistika uchun)
             $table->decimal('total_item_price', 15, 2); // Yakuniy summa: (qty * price) + modifikatlar - chegirma
 
             // Restoran va Maxsus funksiyalar
@@ -44,13 +45,15 @@ return new class extends Migration {
             $table->string('status')->default('pending'); // Taom holati: pending, cooking, ready, served, void
 
             // Aksiya va Marketing
+            $table->string('discount_type')->nullable(); // 'percent' (%) yoki 'fixed' (so'm)
+            $table->decimal('discount_amount', 15, 2)->default(0); // Chegirma summasi
             $table->boolean('is_free')->default(false)->index(); // 1+1 yoki sovg'a sifatida berilganmi?
             $table->string('promo_type')->nullable(); // Aksiya turi: BOGO, HappyHour, EmployeeMeal
             $table->unsignedBigInteger('promotion_id')->nullable(); // Qaysi aksiya qo'llanganining IDsi
 
             // Xavfsizlik va Audit
             $table->string('void_reason')->nullable(); // Agar mahsulot bekor qilinsa, sababi (Audit uchun)
-            $table->string('message')->nullable(); // message (foydalanuvchi tomonidan)
+            $table->string('warehouse')->nullable(); // omborda hisob kitob uchun 
             $table->softDeletes(); // O'chirilgan mahsulotlarni bazada saqlash (Buxgalteriya talabi)
             $table->timestamps(); // Yaratilgan va tahrirlangan vaqt
         });

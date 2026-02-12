@@ -23,6 +23,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('cashier_id')->nullable(); // To'lovni qabul qilgan kassa xodimi
             $table->unsignedBigInteger('taker_id')->nullable();   // Buyurtmani tizimga kiritgan (Ofitsant/Sotuvchi)
             $table->unsignedBigInteger('user_id')->nullable();   // user id xuranda yaniy
+            $table->unsignedBigInteger('table_id')->nullable();   // table id stol idsi
 
             // soliq uchun 
             $table->decimal('total_tax', 15, 2)->default(0);
@@ -48,12 +49,17 @@ return new class extends Migration {
             // Dastavka (Delivery)
             $table->string('delivery_fee_type')->nullable(); // 'fixed' yoki 'distance_based'
             $table->decimal('delivery_fee', 15, 2)->default(0); // Yetkazib berish summasi
-
+            
             // Yakuniy summa
             $table->decimal('total_amount', 15, 2); // Mijoz to'lashi kerak bo'lgan jami summa (Net Total)
-
+            $table->decimal('given_amount', 15, 2); // mijoz tulagan summa.
+            
             // Vaqt ko'rsatkichlari
             $table->timestamp('completed_at')->nullable(); // To'lov to'liq amalga oshirilgan aniq vaqt
+
+            $table->string('deleted_product')->nullable(); // ichidan mahsulot ochirilsa soni boladi agar butunlay chek ochirilsa 0 boladi qizarib chiqadi chek bolimida
+            $table->string('warehouse')->nullable(); // omborda hisob kitob uchun 
+            $table->string('message')->nullable(); // eslatma uchun 
 
             // Audit va Xavfsizlik
             $table->softDeletes(); // O'chirilgan zakazlarni arxivda saqlash (Audit uchun)

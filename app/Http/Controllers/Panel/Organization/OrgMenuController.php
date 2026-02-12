@@ -140,7 +140,7 @@ class OrgMenuController extends Controller
             $data['is_active'] = 0;
         }
 
-        
+
         $org_settings = OrgSettings::where('org_id', $product->org_id)->first();
         $org_settings->update([
             'global_sync_id' => $org_settings->global_sync_id + 1,
